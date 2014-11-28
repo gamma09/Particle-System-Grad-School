@@ -123,7 +123,7 @@ Average draw time: 14.6 ms
 
 
 ************************************************************
-Changelist (current)
+Changelist (revision c36a94b - 11/27/2014)
 - Moved predicate constant for dot product in determinant to
 an actual constant.
 - Renamed get function in matrix to getRow and made its

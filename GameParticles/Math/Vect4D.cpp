@@ -6,7 +6,6 @@
 #include "Vect4D.h"
 
 static const __m128 DEFAULT = _mm_setr_ps(0.0f, 0.0f, 0.0f, 1.0f);
-static const __m128 NORM_DOTP = _mm_setr_ps(1.0f, 1.0f, 1.0f, 0.0f);
 
 Vect4D::Vect4D() {
 	m = DEFAULT;
@@ -25,8 +24,7 @@ Vect4D::~Vect4D() {
 }
 
 Vect4D& Vect4D::norm() {
-	m = _mm_mul_ps(m, _mm_rsqrt_ps(_mm_dp_ps(m, m, 0x7F)));
-	w = 1.0f;
+	m = _mm_mul_ps(m, _mm_rsqrt_ps(_mm_dp_ps(m, m, 0x77)));
 
 	return *this;
 }
