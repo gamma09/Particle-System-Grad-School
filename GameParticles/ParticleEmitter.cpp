@@ -180,7 +180,7 @@ void ParticleEmitter::draw()
 	for (Particle* it = this->headParticle; it; it = it->next)
 	{
 		// get the position from this matrix
-		Vect4D camPosVect = cameraMatrix.get(Matrix::MATRIX_ROW_3);
+		Vect4D camPosVect = cameraMatrix.getRow(Matrix::MATRIX_ROW_3);
 
 		// OpenGL goo... don't worrry about this
 		glVertexPointer(3, GL_FLOAT, 0, squareVertices);

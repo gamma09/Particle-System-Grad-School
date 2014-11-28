@@ -28,7 +28,7 @@ public:
 	Matrix(const Vect4D& row1, const Vect4D& row2, const Vect4D& row3, const Vect4D& row4);
 	~Matrix();
 
-	Vect4D get(MatrixRowEnum row) const;
+	Vect4D getRow(const MatrixRowEnum& row) const;
 
 	void setTransMatrix(const Vect4D& t);
 	void setScaleMatrix(const Vect4D& s);

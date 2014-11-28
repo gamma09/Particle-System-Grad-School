@@ -9,44 +9,38 @@ static const __m128 IDENTITY_ROW_1 = _mm_setr_ps(0.0f, 1.0f, 0.0f, 0.0f);
 static const __m128 IDENTITY_ROW_2 = _mm_setr_ps(0.0f, 0.0f, 1.0f, 0.0f);
 static const __m128 IDENTITY_ROW_3 = _mm_setr_ps(0.0f, 0.0f, 0.0f, 1.0f);
 
-Matrix::Matrix()
-{	// constructor for the matrix
-	this->row0 = IDENTITY_ROW_0;
-	this->row1 = IDENTITY_ROW_1;
-	this->row2 = IDENTITY_ROW_2;
-	this->row3 = IDENTITY_ROW_3;
+static const __m128 DETERMINANT_DOT_P = _mm_setr_ps(1.0f, -1.0f, 1.0f, -1.0f);
+
+// Default constructor
+Matrix::Matrix() : row0(IDENTITY_ROW_0), row1(IDENTITY_ROW_1), row2(IDENTITY_ROW_2), row3(IDENTITY_ROW_3) {
 }
 
 
-Matrix::Matrix(const Matrix& t)
-{ // copy constructor
-	this->row0 = t.row0;
-	this->row1 = t.row1;
-	this->row2 = t.row2;
-	this->row3 = t.row3;
+// copy constructor
+Matrix::Matrix(const Matrix& t) : row0(t.row0), row1(t.row1), row2(t.row2), row3(t.row3) {
 }
 
-Matrix::Matrix(const Vect4D& row0, const Vect4D& row1, const Vect4D& row2, const Vect4D& row3) {
-	this->row0 = _mm_load_ps(row0.m.m128_f32);
-	this->row1 = _mm_load_ps(row1.m.m128_f32);
-	this->row2 = _mm_load_ps(row2.m.m128_f32);
-	this->row3 = _mm_load_ps(row3.m.m128_f32);
+// Specialize constructor
+Matrix::Matrix(const Vect4D& _row0, const Vect4D& _row1, const Vect4D& _row2, const Vect4D& _row3) 
+	: row0(_row0.m), row1(_row1.m), row2(_row2.m), row3(_row3.m) {
 }
 
 
-Matrix::~Matrix()
-{
+Matrix::~Matrix() {
 	// nothign to delete
 }
 
-void Matrix::setTransMatrix(const Vect4D& t)
-{ // set the translation matrix (note: we are row major)
-	row3 = _mm_load_ps(t.m.m128_f32);
-	this->m15 = 1.0f;
+void Matrix::setTransMatrix(const Vect4D& t) {
+	// set the translation matrix (note: we are row major)
+
+#ifdef _DEBUG
+	assert(t.w == 1.0f);
+#endif
+
+	row3 = t.m;
 }
 
-float &Matrix::operator[](INDEX_ENUM e)
-{
+float& Matrix::operator[](INDEX_ENUM e) {
 	// get the individual elements
 	switch(e)
 	{
@@ -106,8 +100,7 @@ float &Matrix::operator[](INDEX_ENUM e)
 }
 
 
-Vect4D Matrix::get(MatrixRowEnum row) const
-{ // get a row of the matrix
+Vect4D Matrix::getRow(const MatrixRowEnum& row) const {
 	switch( row )
 	{
 	case MATRIX_ROW_0:
@@ -129,39 +122,39 @@ Vect4D Matrix::get(MatrixRowEnum row) const
 }
 
 
-Matrix& Matrix::operator*=(const Matrix& rhs)
-{ // matrix multiplications
+Matrix& Matrix::operator*=(const Matrix& rhs) {
+	// matrix multiplications
 	// OPERATIONS: 24
 
-	__m128 col0 = _mm_set_ps(rhs.m12, rhs.m8, rhs.m4, rhs.m0);
-	__m128 col1 = _mm_set_ps(rhs.m13, rhs.m9, rhs.m5, rhs.m1);
-	__m128 col2 = _mm_set_ps(rhs.m14, rhs.m10, rhs.m6, rhs.m2);
-	__m128 col3 = _mm_set_ps(rhs.m15, rhs.m11, rhs.m7, rhs.m3);
+	__m128 col0 = _mm_setr_ps(rhs.m0, rhs.m4, rhs.m8, rhs.m12);
+	__m128 col1 = _mm_setr_ps(rhs.m1, rhs.m5, rhs.m9, rhs.m13);
+	__m128 col2 = _mm_setr_ps(rhs.m2, rhs.m6, rhs.m10, rhs.m14);
+	__m128 col3 = _mm_setr_ps(rhs.m3, rhs.m7, rhs.m11, rhs.m15);
 
 	__m128 row0 = this->row0;
 	__m128 row1 = this->row1;
 	__m128 row2 = this->row2;
 	__m128 row3 = this->row3;
 
-	m0  = _mm_dp_ps(row0, col0, 0xFF).m128_f32[0];
-	m1  = _mm_dp_ps(row0, col1, 0xFF).m128_f32[0];
-	m2  = _mm_dp_ps(row0, col2, 0xFF).m128_f32[0];
-	m3  = _mm_dp_ps(row0, col3, 0xFF).m128_f32[0];
+	m0  = _mm_dp_ps(row0, col0, 0xF1).m128_f32[0];
+	m1  = _mm_dp_ps(row0, col1, 0xF1).m128_f32[0];
+	m2  = _mm_dp_ps(row0, col2, 0xF1).m128_f32[0];
+	m3  = _mm_dp_ps(row0, col3, 0xF1).m128_f32[0];
 
-	m4  = _mm_dp_ps(row1, col0, 0xFF).m128_f32[0];
-	m5  = _mm_dp_ps(row1, col1, 0xFF).m128_f32[0];
-	m6  = _mm_dp_ps(row1, col2, 0xFF).m128_f32[0];
-	m7  = _mm_dp_ps(row1, col3, 0xFF).m128_f32[0];
+	m4  = _mm_dp_ps(row1, col0, 0xF1).m128_f32[0];
+	m5  = _mm_dp_ps(row1, col1, 0xF1).m128_f32[0];
+	m6  = _mm_dp_ps(row1, col2, 0xF1).m128_f32[0];
+	m7  = _mm_dp_ps(row1, col3, 0xF1).m128_f32[0];
 
-	m8  = _mm_dp_ps(row2, col0, 0xFF).m128_f32[0];
-	m9  = _mm_dp_ps(row2, col1, 0xFF).m128_f32[0];
-	m10 = _mm_dp_ps(row2, col2, 0xFF).m128_f32[0];
-	m11 = _mm_dp_ps(row2, col3, 0xFF).m128_f32[0];
+	m8  = _mm_dp_ps(row2, col0, 0xF1).m128_f32[0];
+	m9  = _mm_dp_ps(row2, col1, 0xF1).m128_f32[0];
+	m10 = _mm_dp_ps(row2, col2, 0xF1).m128_f32[0];
+	m11 = _mm_dp_ps(row2, col3, 0xF1).m128_f32[0];
 
-	m12 = _mm_dp_ps(row3, col0, 0xFF).m128_f32[0];
-	m13 = _mm_dp_ps(row3, col1, 0xFF).m128_f32[0];
-	m14 = _mm_dp_ps(row3, col2, 0xFF).m128_f32[0];
-	m15 = _mm_dp_ps(row3, col3, 0xFF).m128_f32[0];
+	m12 = _mm_dp_ps(row3, col0, 0xF1).m128_f32[0];
+	m13 = _mm_dp_ps(row3, col1, 0xF1).m128_f32[0];
+	m14 = _mm_dp_ps(row3, col2, 0xF1).m128_f32[0];
+	m15 = _mm_dp_ps(row3, col3, 0xF1).m128_f32[0];
 
 	return *this;
 }
@@ -176,12 +169,15 @@ Matrix& Matrix::operator-=(const Matrix& t) {
 	return *this;
 }
 
-Matrix& Matrix::operator/=(const float rhs)
-{
+Matrix& Matrix::operator/=(const float rhs) {
 	// OPERATIONS: 6
 
 	// divide each element by a value
 	// using inverse multiply trick, faster that individual divides
+#ifdef _DEBUG
+	assert(fabs(rhs) > 0.0001f);
+#endif
+
 	__m128 mul = _mm_set_ps1(1.0f / rhs);
 	row0 = _mm_mul_ps(row0, mul);
 	row1 = _mm_mul_ps(row1, mul);
@@ -191,10 +187,7 @@ Matrix& Matrix::operator/=(const float rhs)
 	return *this;
 }
 
-static const __m128 DETERMINANT_DOT_P = _mm_setr_ps(1.0f, -1.0f, 1.0f, -1.0f);
-
-float Matrix::Determinant() const
-{
+float Matrix::Determinant() const {
 	// OPERATIONS: 27
 
 	// A = { a,b,c,d / e,f,g,h / j,k,l,m / n,o,p,q }
@@ -240,12 +233,12 @@ float Matrix::Determinant() const
 	//		  - (b (e*ta - g*td + h*tf) )
 	//		  + (c (e*tb - f*td + h*te) )
 	//		  - (d (e*tc - f*tf + g*te) )
-	
-	
 }
 
-Matrix Matrix::GetAdjugate() const
-{
+Matrix Matrix::GetAdjugate() const {
+	// TODO: Can we optimize this any?
+
+
 	// matrix = { a,b,c,d / e,f,g,h / j,k,l,m / n,o,p,q }
 	
 	// ta = lq - mp
@@ -425,25 +418,18 @@ Matrix Matrix::GetAdjugate() const
 	return tmp;
 }
 
-void Matrix::Inverse(Matrix &out) const
-{
-	Matrix tmp;
+void Matrix::Inverse(Matrix &out) const {
 	float det = Determinant();
-	if(fabs(det) < 0.0001)
-	{
-		// do nothing, Matrix is not invertable
-	}
-	else
-	{
-		tmp = GetAdjugate();
-		tmp /= det;
-	}
 
-	out = tmp;
+#ifdef _DEBUG
+	assert(fabs(det) > 0.0001f);
+#endif
+
+	out = GetAdjugate();
+	out /= det;
 }
 
-void Matrix::setScaleMatrix(const Vect4D& scale)
-{
+void Matrix::setScaleMatrix(const Vect4D& scale) {
 	//	{	sx		0		0		0	}
 	//	{	0		sy		0		0	}
 	//	{	0		0		sz		0	}
@@ -453,8 +439,7 @@ void Matrix::setScaleMatrix(const Vect4D& scale)
 	m10 = scale.z;
 }
 
-void Matrix::setRotZMatrix(const float az)
-{
+void Matrix::setRotZMatrix(const float az) {
 	//	{	cos		-sin	0		0	}
 	//	{	sin		cos		0		0	}
 	//	{	0		0		1		0	}

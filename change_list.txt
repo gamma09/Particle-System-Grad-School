@@ -126,4 +126,8 @@ Average draw time: 14.6 ms
 Changelist (current)
 - Moved predicate constant for dot product in determinant to
 an actual constant.
+- Renamed get function in matrix to getRow and made its
+argument a const reference.
+
+
 
