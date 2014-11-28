@@ -31,7 +31,6 @@ public:
 
 private:
 
-	float last_spawn;
 	float last_loop;
 	float life;
 

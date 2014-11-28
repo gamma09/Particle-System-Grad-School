@@ -28,8 +28,7 @@ static const float squareVertices[] =
 static const __m128 PIVOT_VECTOR = _mm_setr_ps(20.0f, 0.0f, 1000.0f, 1.0f);
 
 ParticleEmitter::ParticleEmitter()
-:	last_spawn( globalTimer::getTimerInSec() ),
-	last_loop(  globalTimer::getTimerInSec() )
+	: last_loop(  globalTimer::getTimerInSec() )
 {
 	SpawnParticles();
 }

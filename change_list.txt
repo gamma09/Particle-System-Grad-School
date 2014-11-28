@@ -152,7 +152,7 @@ Average draw time: 14.1 ms
 
 
 ************************************************************
-Changelist (current)
+Changelist (revision bd0e28b - 11/28/2014)
 - Removed prev, curr, and diff mtx from Particle.
 - Removed ParticleColdData.
 
