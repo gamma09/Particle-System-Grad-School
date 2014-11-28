@@ -26,8 +26,6 @@ public:
 	Matrix currMtx;
 	Matrix diffMtx;
 	Matrix prevMtx;
-
-	int identifier;
 };
 
 class __declspec(align(16)) Particle {
@@ -37,7 +35,7 @@ public:
 	Particle();
 	Particle(const Particle& p);
 	~Particle();
-	void Update(const float& time_elapsed);
+	void Update(const float& time_elapsed, const float& life);
 	void Randomize();
 
 	void* operator new (size_t size) {
@@ -51,14 +49,13 @@ public:
 private:
 	Particle *next;
 	Particle *prev;
-	float life;
 	float rotation;
+	float rotation_velocity;
 
 	Vect4D position;
 	Vect4D scale;
 	Vect4D velocity;
 
-	float rotation_velocity;
 	std::shared_ptr<ParticleColdData> coldData;
 };
 

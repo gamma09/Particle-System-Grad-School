@@ -18,7 +18,6 @@ ParticleColdData::~ParticleColdData()
 }
 
 Particle::Particle() :
-	life(0.0f),
 	position(),
 	scale(STARTING_SCALE),
 	rotation(0.0f),
@@ -34,7 +33,6 @@ Particle::Particle(const Particle& p) :
 	prev(p.prev),
 	position(p.position),
 	scale(p.scale),
-	life(p.life),
 	rotation(p.rotation),
 	velocity(p.velocity),
 	rotation_velocity(p.rotation_velocity),
@@ -46,7 +44,7 @@ Particle::~Particle() {
 	// nothing to do
 }
 
-void Particle::Update(const float& time_elapsed) {
+void Particle::Update(const float& time_elapsed, const float& life) {
 	// Rotate the matrices
 	coldData->prevMtx = coldData->currMtx;
 
@@ -63,7 +61,6 @@ void Particle::Update(const float& time_elapsed) {
 	rotation += scale;
 
 	// serious math below - magic secret sauce
-	life += time_elapsed;
 	Vect4D vel = velocity;
 	vel *= time_elapsed;
 	position += vel;

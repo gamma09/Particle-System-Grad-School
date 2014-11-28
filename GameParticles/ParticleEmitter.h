@@ -5,6 +5,7 @@
 #include "Vect4D.h"
 #include "Particle.h"
 #include "mem.h"
+#include "Settings.h"
 
 extern memSystem mem;
 
@@ -22,21 +23,19 @@ public:
 		mem.Free(memory);
 	}
 	
-	void SpawnParticle();
+	void SpawnParticles();
 	void update();
 	void draw();
-
-	void addParticleToList(Particle *p );
-	void removeParticleFromList( Particle *p );
+	void reset();
 
 
 private:
 
-	float	last_spawn;
-	float	last_loop;
-	int		last_active_particle;
-	
-	Particle *headParticle;
+	float last_spawn;
+	float last_loop;
+	float life;
+
+	Particle* particles[NUM_PARTICLES];
 };
 
 #endif // PARTICLEEMITTER_H

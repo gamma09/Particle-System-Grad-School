@@ -139,7 +139,13 @@ Average draw time: 14.1 ms
 ************************************************************
 Changelist (current)
 - Removed the weird spawning mechanic.
+- Particles are no longer in a list. (just an array of
+Particle pointers now)
+- Moved life to particle emitter.
+- Particles are only spawned once. (on reset, it just
+re-initializes existing particles, allowing us to not
+have to do a shit ton of allocations/deallocations)
 
 Speed Benchmark:
-Average update time: 2.3 ms
-Average draw time: 14.0 ms
+Average update time: 2.1 ms
+Average draw time: 15.0 ms
