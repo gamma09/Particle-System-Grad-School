@@ -47,14 +47,12 @@ public:
 	}
 
 private:
-	Particle *next;
-	Particle *prev;
-	float rotation;
-	float rotation_velocity;
-
 	Vect4D position;
 	Vect4D scale;
 	Vect4D velocity;
+
+	float rotation;
+	float rotation_velocity;
 
 	std::shared_ptr<ParticleColdData> coldData;
 };

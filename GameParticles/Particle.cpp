@@ -29,8 +29,6 @@ Particle::Particle() :
 }
 
 Particle::Particle(const Particle& p) :
-	next(p.next),
-	prev(p.prev),
 	position(p.position),
 	scale(p.scale),
 	rotation(p.rotation),
