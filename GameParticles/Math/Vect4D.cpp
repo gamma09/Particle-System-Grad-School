@@ -65,16 +65,12 @@ float& Vect4D::operator[](const VECT_ENUM& e) {
 	{
 	case 0:
 			return x;
-			break;
 	case 1:
 			return y;
-			break;
 	case 2: 
 			return z;
-			break;
 	case 3:
 			return w;
-			break;
 	default:
 			assert(0);
 			return x;

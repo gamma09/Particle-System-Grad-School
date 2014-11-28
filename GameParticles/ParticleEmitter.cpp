@@ -8,7 +8,7 @@
 #include "Settings.h"
 #include "mem.h"
 
-static const float SPAWN_FREQUENCY = 0.0000001f;
+static const float SPAWN_FREQUENCY = 0.0000001f; // 
 
 static const unsigned char squareColors[] = 
 {
@@ -28,6 +28,7 @@ static const float squareVertices[] =
 
 static const __m128 PIVOT_VECTOR = _mm_setr_ps(20.0f, 0.0f, 1000.0f, 1.0f);
 
+static int CURRENT_IDENTIFIER = 0;
 
 ParticleEmitter::ParticleEmitter()
 :	last_spawn( globalTimer::getTimerInSec() ),
@@ -121,7 +122,10 @@ void ParticleEmitter::update()
 	   
 void ParticleEmitter::addParticleToList(Particle *p )
 {
+#ifdef _DEBUG
 	assert(p);
+#endif
+
 	if( this->headParticle == 0 )
 	{ // first on list
 		this->headParticle = p;
@@ -141,7 +145,9 @@ void ParticleEmitter::addParticleToList(Particle *p )
 void ParticleEmitter::removeParticleFromList( Particle *p )
 {
 	// make sure we are not screwed with a null pointer
+#ifdef _DEBUG
 	assert(p);
+#endif
 
 	if( p->prev == 0 && p->next == 0  )
 	{ // only one on the list

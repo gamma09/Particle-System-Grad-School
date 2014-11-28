@@ -23,9 +23,11 @@ public:
 	}
 
 public:
-	__declspec(align(16)) Matrix currMtx;
-	__declspec(align(16)) Matrix diffMtx;
-	__declspec(align(16)) Matrix prevMtx;
+	Matrix currMtx;
+	Matrix diffMtx;
+	Matrix prevMtx;
+
+	int identifier;
 };
 
 class __declspec(align(16)) Particle {
@@ -52,9 +54,9 @@ private:
 	float life;
 	float rotation;
 
-	__declspec(align(16)) Vect4D position;
-	__declspec(align(16)) Vect4D scale;
-	__declspec(align(16)) Vect4D velocity;
+	Vect4D position;
+	Vect4D scale;
+	Vect4D velocity;
 
 	float rotation_velocity;
 	std::shared_ptr<ParticleColdData> coldData;

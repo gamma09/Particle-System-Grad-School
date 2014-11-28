@@ -46,56 +46,55 @@ float& Matrix::operator[](const INDEX_ENUM& e) {
 	{
 	case 0:
 		return m0;
-		break;
+
 	case 1:
 		return m1;
-		break;
+
 	case 2:
 		return m2;
-		break;
+
 	case 3:
 		return m3;
-		break;
+
 	case 4:
 		return m4;
-		break;
+
 	case 5:
 		return m5;
-		break;
+
 	case 6:
 		return m6;
-		break;
+
 	case 7:
 		return m7;
-		break;
+
 	case 8:
 		return m8;
-		break;
+
 	case 9:
 		return m9;
-		break;	
+
 	case 10:
 		return m10;
-		break;
+
 	case 11:
 		return m11;
-		break;	
+
 	case 12:
 		return m12;
-		break;	
+
 	case 13:
 		return m13;
-		break;	
+
 	case 14:
 		return m14;
-		break;
+
 	case 15:
 		return m15;
-		break;
+
 	default:
 		assert(0);
 		return m0;
-		break;
 	}
 }
 
