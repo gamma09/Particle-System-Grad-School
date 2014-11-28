@@ -6,24 +6,12 @@ const static __m128 STARTING_VELOCITY = _mm_setr_ps(0.0f, 1.0f, 0.0f, 1.0f);
 const static __m128 STARTING_SCALE = _mm_set_ps1(1.0f);
 const static Vect4D Z_AXIS(0.0f, -0.25f, 1.0f, 1.0f);
 
-ParticleColdData::ParticleColdData() :
-	currMtx(),
-	diffMtx(),
-	prevMtx()
-{
-}
-
-ParticleColdData::~ParticleColdData()
-{
-}
-
 Particle::Particle() :
 	position(),
 	scale(STARTING_SCALE),
 	rotation(0.0f),
 	velocity(STARTING_VELOCITY),
-	rotation_velocity(0.5f),
-	coldData(new ParticleColdData)
+	rotation_velocity(0.5f)
 {
 	Randomize();
 }
@@ -33,8 +21,7 @@ Particle::Particle(const Particle& p) :
 	scale(p.scale),
 	rotation(p.rotation),
 	velocity(p.velocity),
-	rotation_velocity(p.rotation_velocity),
-	coldData(p.coldData)
+	rotation_velocity(p.rotation_velocity)
 {
 }
 
@@ -44,19 +31,10 @@ Particle::~Particle() {
 
 void Particle::Update(const float& time_elapsed, const float& life) {
 	// Rotate the matrices
-	coldData->prevMtx = coldData->currMtx;
-
-	float scale = coldData->diffMtx.Determinant();
-
-	if (scale > 1.0f) {
-		scale = 1.0f / scale;
-	}
-
 	float rot_vel = rotation_velocity;
 	rot_vel *= time_elapsed;
 	rot_vel *= 2.01f;
 	rotation += rot_vel;
-	rotation += scale;
 
 	// serious math below - magic secret sauce
 	Vect4D vel = velocity;

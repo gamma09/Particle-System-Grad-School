@@ -121,15 +121,8 @@ void ParticleEmitter::draw()
 		// set the transformation matrix
 		glLoadMatrixf(reinterpret_cast<float*>(&scaleMatrix));
 
-		// squirrel away matrix for next update
-		particles[i]->coldData->currMtx = scaleMatrix;
-
 		// draw the trangle strip
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-		// difference vector
-		particles[i]->coldData->diffMtx = particles[i]->coldData->currMtx;
-		particles[i]->coldData->diffMtx -= particles[i]->coldData->prevMtx;
 		
 		// clears or flushes some internal setting, used in debug, but is need for performance reasons
 		// magic...  really it's magic.

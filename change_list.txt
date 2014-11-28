@@ -149,3 +149,13 @@ have to do a shit ton of allocations/deallocations)
 Speed Benchmark:
 Average update time: 2.1 ms
 Average draw time: 14.1 ms
+
+
+************************************************************
+Changelist (current)
+- Removed prev, curr, and diff mtx from Particle.
+- Removed ParticleColdData.
+
+Speed Benchmark:
+Average update time: 1.4 ms
+Average draw time: 13.3 ms

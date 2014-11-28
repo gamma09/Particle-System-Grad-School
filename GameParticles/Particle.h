@@ -9,25 +9,6 @@
 
 extern memSystem mem;
 
-struct __declspec(align(16)) ParticleColdData {
-public:
-	ParticleColdData();
-	~ParticleColdData();
-	
-	void* operator new(size_t size) {
-		return mem.Malloc(size);
-	}
-
-	void operator delete(void* memory) {
-		mem.Free(memory);
-	}
-
-public:
-	Matrix currMtx;
-	Matrix diffMtx;
-	Matrix prevMtx;
-};
-
 class __declspec(align(16)) Particle {
 public:
 	friend class ParticleEmitter;
@@ -53,8 +34,6 @@ private:
 
 	float rotation;
 	float rotation_velocity;
-
-	std::shared_ptr<ParticleColdData> coldData;
 };
 
 #endif //PARTICLE_H
