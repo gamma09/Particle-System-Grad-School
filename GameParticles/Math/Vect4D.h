@@ -32,15 +32,15 @@ public:
 
 	Vect4D Cross(const Vect4D &vin) const;
 
-	float &operator[](VECT_ENUM e);
+	float &operator[](const VECT_ENUM& e);
 
 private:
 #pragma warning(push)
 #pragma warning(disable : 4201)
-	union __declspec(align(16)) {
-		__declspec(align(16)) __m128 m;
+	union {
+		__m128 m;
 
-		__declspec(align(16)) struct {
+		struct {
 			float x;
 			float y;
 			float z;

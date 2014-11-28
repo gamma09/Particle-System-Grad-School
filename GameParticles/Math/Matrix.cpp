@@ -40,7 +40,7 @@ void Matrix::setTransMatrix(const Vect4D& t) {
 	row3 = t.m;
 }
 
-float& Matrix::operator[](INDEX_ENUM e) {
+float& Matrix::operator[](const INDEX_ENUM& e) {
 	// get the individual elements
 	switch(e)
 	{

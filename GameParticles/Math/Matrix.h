@@ -34,7 +34,7 @@ public:
 	void setScaleMatrix(const Vect4D& s);
 	void setRotZMatrix(const float Z_Radians);
 
-	float& operator[](INDEX_ENUM e);
+	float& operator[](const INDEX_ENUM& e);
 	
 	Matrix& operator*=(const Matrix& t);
 	Matrix& operator-=(const Matrix& t);
@@ -50,9 +50,9 @@ private:
 
 #pragma warning(push)
 #pragma warning(disable : 4201)
-	union __declspec(align(16)) {
-		__declspec(align(16)) __m128 row0;
-		__declspec(align(16)) struct {
+	union {
+		__m128 row0;
+		struct {
 			float m0;
 			float m1;
 			float m2;
@@ -60,9 +60,9 @@ private:
 		};
 	};
 
-	union __declspec(align(16)) {
-		__declspec(align(16)) __m128 row1;
-		__declspec(align(16)) struct {
+	union {
+		__m128 row1;
+		struct {
 			float m4;
 			float m5;
 			float m6;
@@ -70,9 +70,9 @@ private:
 		};
 	};
 
-	union __declspec(align(16)) {
-		__declspec(align(16)) __m128 row2;
-		__declspec(align(16)) struct {
+	union {
+		__m128 row2;
+		struct {
 			float m8;
 			float m9;
 			float m10;
@@ -80,9 +80,9 @@ private:
 		};
 	};
 
-	union __declspec(align(16)) {
-		__declspec(align(16)) __m128 row3;
-		__declspec(align(16)) struct {
+	union {
+		__m128 row3;
+		struct {
 			float m12;
 			float m13;
 			float m14;

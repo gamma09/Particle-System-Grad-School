@@ -5,11 +5,11 @@
 
 #include "Vect4D.h"
 
-static const float DEFAULT[] = {0.0f, 0.0f, 0.0f, 1.0f};
+static const __m128 DEFAULT = _mm_setr_ps(0.0f, 0.0f, 0.0f, 1.0f);
 static const __m128 NORM_DOTP = _mm_setr_ps(1.0f, 1.0f, 1.0f, 0.0f);
 
 Vect4D::Vect4D() {
-	m = _mm_load_ps(DEFAULT);
+	m = DEFAULT;
 }
 
 Vect4D::Vect4D(const __m128& _m) {
@@ -25,8 +25,8 @@ Vect4D::~Vect4D() {
 }
 
 Vect4D& Vect4D::norm() {
-	m = _mm_mul_ps(m, _mm_rsqrt_ps(_mm_dp_ps(_mm_mul_ps(m, m), NORM_DOTP, 0xFF)));
-	w = 1.0;
+	m = _mm_mul_ps(m, _mm_rsqrt_ps(_mm_dp_ps(m, m, 0x7F)));
+	w = 1.0f;
 
 	return *this;
 }
@@ -45,15 +45,14 @@ Vect4D& Vect4D::operator+= (const __m128& t) {
 }
 
 Vect4D& Vect4D::operator-= (const Vect4D& t) {
-	_mm_storeu_ps(m.m128_f32, _mm_sub_ps(_mm_loadu_ps(m.m128_f32), _mm_loadu_ps(t.m.m128_f32)));
+	m = _mm_sub_ps(m, t.m);
 	w += t.w;
 	return *this;
 }
 
 Vect4D& Vect4D::operator *=(const float scale) {
-	float oldW = w;
 	m = _mm_mul_ps(m, _mm_set_ps1(scale));
-	w = oldW;
+	w = 1.0f;
 
 	return *this;
 }
@@ -63,7 +62,7 @@ Vect4D& Vect4D::operator *= (const __m128& t) {
 	return *this;
 }
 
-float& Vect4D::operator[](VECT_ENUM e) {
+float& Vect4D::operator[](const VECT_ENUM& e) {
 	switch(e)
 	{
 	case 0:
