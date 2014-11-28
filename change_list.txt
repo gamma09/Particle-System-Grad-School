@@ -1,0 +1,117 @@
+************************************************************
+Changelist (revision 132760 - 11/13/2014)
+- Deleted CopyOnly function from Particle.
+
+- Added copy constructor for Particle.
+
+- Changed all doubles to floats.
+
+Speed Benchmark:
+Average update time: 12.0 ms
+Average draw time: 34.5 ms
+
+
+************************************************************
+Changelist (revision 132836 - 11/13/2014)
+- Changed Matrix to use SIMD wherever it was reasonable to
+do so.
+
+- Added some consts wherever they could work.
+
+- Smashed my head really really hard against the msvc
+compiler to get it to actually align the intrinsic types
+with 16-byte alignment in release (It did it no problem in
+Debug) >_<
+
+- Aforementioned head smashing only gave me a headache -> no
+solution was found this day except to treat intrinsics as being
+unaligned.
+
+Speed Benchmark:
+Average update time: 7.5 ms (1.6x faster)
+Average draw time: 19.8 ms (1.7x faster)
+
+
+
+************************************************************
+Changelist (revision 133174 - 11/16/2014)
+- Changed vect4D to use SIMD in several places.
+- Added a few consts to Vect4D.
+
+Speed Benchmark:
+Average update time: 6.8 ms (1.1x faster)
+Average draw time: 20.4 ms (~ the same speed)
+
+
+
+************************************************************
+Changelist (revision 133200 - 11/16/2014)
+- All operations performed on Vect4D are done in-place now.
+- Changed ParticleEmitter to use a vector instead of a list
+for the draw buffer.
+
+Speed Benchmark:
+Average update time: 5.4 ms (1.3x faster)
+Average draw time: 20.0 ms (~ the same speed)
+
+
+************************************************************
+Changelist (revision 133215 - 11/16/2014)
+- Matrix operations are now done in-place.
+- Added memory system from PA3 to speed up memory allocations.
+
+Speed Benchmark:
+Average update time: 4.9 ms (1.1x faster)
+Average draw time: 16.9 ms (1.2x faster)
+
+
+************************************************************
+Changelist (revision 133639 - 11/19/2014)
+- Changed Particle to use a hot/cold data structure.
+- Changed curr_Rows, diff_Rows, and prev_Rows to 3 Matrices
+instead of 12 Vectors.
+- Simplified a little bit of arithmatic.
+
+Speed Benchmark:
+Average update time: 4.1 ms (1.2x faster)
+Average draw time: 18.8 ms (1.1x slower)
+
+
+************************************************************
+Changelist (revision 133655 - 11/19/2014)
+- Moved Execute to Particle class.
+- Changed Execute to use SIMD.
+- Extracted default values in Execute to constants.
+- Renamed Execute to Randomize.
+- Moved draw-related stuff from the update timer block to
+the draw timer block.  (total time remains unchanged)
+- Removed duplicate "load inverse camera matrix" code.
+
+Speed Benchmark is the same as the above values.
+
+
+************************************************************
+Changelist (revision 133661 - 11/19/2014)
+- Removed draw buffer from ParticleEmitter (seeing as how
+the memory system fixes the cache issues from using the link
+list).
+- Simplified one calculation in ParticleEmitter's draw (got
+rid of one temporary).
+
+Speed Benchmark:
+Average update time: 2.8 ms (1.5x faster....woo!)
+Average draw time: 17.1 ms (1.1x faster)
+
+
+************************************************************
+Changelist (revision 133683 - 11/19/2014)
+- Monkeyed around with the compiler settings to get the most
+from the code.
+- Fixed an out-of-date comment in mem.h.
+- Removed two variables that were actually constants in
+disguise.
+
+Speed Benchmark:
+Average update time: 2.7 ms
+Average draw time: 17.0 ms
+
