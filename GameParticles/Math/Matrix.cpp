@@ -27,10 +27,10 @@ Matrix::Matrix(const Matrix& t)
 }
 
 Matrix::Matrix(const Vect4D& row0, const Vect4D& row1, const Vect4D& row2, const Vect4D& row3) {
-	this->row0 = _mm_loadu_ps(row0.m.m128_f32);
-	this->row1 = _mm_loadu_ps(row1.m.m128_f32);
-	this->row2 = _mm_loadu_ps(row2.m.m128_f32);
-	this->row3 = _mm_loadu_ps(row3.m.m128_f32);
+	this->row0 = _mm_load_ps(row0.m.m128_f32);
+	this->row1 = _mm_load_ps(row1.m.m128_f32);
+	this->row2 = _mm_load_ps(row2.m.m128_f32);
+	this->row3 = _mm_load_ps(row3.m.m128_f32);
 }
 
 
@@ -41,7 +41,7 @@ Matrix::~Matrix()
 
 void Matrix::setTransMatrix(const Vect4D& t)
 { // set the translation matrix (note: we are row major)
-	row3 = _mm_loadu_ps(t.m.m128_f32);
+	row3 = _mm_load_ps(t.m.m128_f32);
 	this->m15 = 1.0f;
 }
 
@@ -131,6 +131,8 @@ Vect4D Matrix::get(MatrixRowEnum row) const
 
 Matrix& Matrix::operator*=(const Matrix& rhs)
 { // matrix multiplications
+	// OPERATIONS: 24
+
 	__m128 col0 = _mm_set_ps(rhs.m12, rhs.m8, rhs.m4, rhs.m0);
 	__m128 col1 = _mm_set_ps(rhs.m13, rhs.m9, rhs.m5, rhs.m1);
 	__m128 col2 = _mm_set_ps(rhs.m14, rhs.m10, rhs.m6, rhs.m2);
@@ -165,6 +167,7 @@ Matrix& Matrix::operator*=(const Matrix& rhs)
 }
 
 Matrix& Matrix::operator-=(const Matrix& t) {
+	// OPERATIONS: 4
 	row0 = _mm_sub_ps(row0, t.row0);
 	row1 = _mm_sub_ps(row1, t.row1);
 	row2 = _mm_sub_ps(row2, t.row2);
@@ -174,7 +177,9 @@ Matrix& Matrix::operator-=(const Matrix& t) {
 }
 
 Matrix& Matrix::operator/=(const float rhs)
-{ 
+{
+	// OPERATIONS: 6
+
 	// divide each element by a value
 	// using inverse multiply trick, faster that individual divides
 	__m128 mul = _mm_set_ps1(1.0f / rhs);
@@ -186,8 +191,12 @@ Matrix& Matrix::operator/=(const float rhs)
 	return *this;
 }
 
+static const __m128 DETERMINANT_DOT_P = _mm_setr_ps(1.0f, -1.0f, 1.0f, -1.0f);
+
 float Matrix::Determinant() const
 {
+	// OPERATIONS: 27
+
 	// A = { a,b,c,d / e,f,g,h / j,k,l,m / n,o,p,q }
 	// A = { 0,1,2,3 / 4,5,6,7 / 8,9,10,11 / 12,13,14,15 }
 	
@@ -201,14 +210,16 @@ float Matrix::Determinant() const
 	//			+ (c (e (kq - mo) - f (jq - mn) + h (jo - kn) ) )
 	//			- (d (e (kp - lo) - f (jp - ln) + g (jo - kn) ) )
 
-	// Stage 1 calculations (calculate all of the 2x2 determinants that we'll need
+	// Stage 1 calculations (calculate all of the 2x2 determinants that we'll need)
 	__m128 t1a = _mm_mul_ps(_mm_set_ps(m10, m9, m9, m8), _mm_set_ps(m15, m15, m14, m15));
 	__m128 t1b = _mm_mul_ps(_mm_set_ps1(m8), _mm_set_ps(m13, m14, 0.0f, 0.0f));
 	__m128 t2a = _mm_mul_ps(_mm_set_ps(m11, m11, m10, m11), _mm_set_ps(m14, m13, m13, m12));
 	__m128 t2b = _mm_mul_ps(_mm_set_ps(m9, m10, 0.0f, 0.0f), _mm_set_ps1(m12));
+	// 12 operations
 
 	__m128 va = _mm_sub_ps(t1a, t2a);
 	__m128 vb = _mm_sub_ps(t1b, t2b);
+	// 2 operations
 
 	// Stage 2 calculations (calculate the overall determinant)
 	__m128 v1 = _mm_set_ps(m4, m4, m4, m5);
@@ -217,11 +228,14 @@ float Matrix::Determinant() const
 	__m128 v4 = _mm_set_ps(vb.m128_f32[2], va.m128_f32[0], va.m128_f32[0], va.m128_f32[2]);
 	__m128 v5 = _mm_set_ps(m6, m7, m7, m7);
 	__m128 v6 = _mm_set_ps(vb.m128_f32[3], vb.m128_f32[3], vb.m128_f32[2], va.m128_f32[1]);
+	// 6 operations
 
 	__m128 z = _mm_mul_ps(row0, _mm_add_ps(_mm_sub_ps(_mm_mul_ps(v1, v2), _mm_mul_ps(v3, v4)), _mm_mul_ps(v5, v6)));
+	// 6 operations
 
-	return _mm_dp_ps(z, _mm_setr_ps(1.0f, -1.0f, 1.0f, -1.0f), 0xFF).m128_f32[0];
-	
+	return _mm_dp_ps(z, DETERMINANT_DOT_P, 0xF1).m128_f32[0];
+	// 1 operation
+
 	// det(A) = (a (f*ta - g*tb + h*tc) )
 	//		  - (b (e*ta - g*td + h*tf) )
 	//		  + (c (e*tb - f*td + h*te) )

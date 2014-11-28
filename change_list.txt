@@ -115,3 +115,15 @@ Speed Benchmark:
 Average update time: 2.7 ms
 Average draw time: 17.0 ms
 
+
+----- SWITCHED FROM PERFORCE TO GIT! -----
+Initial Benchmark:
+Average update time: 2.6 ms
+Average draw time: 14.6 ms
+
+
+************************************************************
+Changelist (current)
+- Moved predicate constant for dot product in determinant to
+an actual constant.
+
