@@ -137,7 +137,7 @@ Average draw time: 14.1 ms
 
 
 ************************************************************
-Changelist (current)
+Changelist (revision 29d4d8c - 11/28/2014)
 - Removed the weird spawning mechanic.
 - Particles are no longer in a list. (just an array of
 Particle pointers now)
