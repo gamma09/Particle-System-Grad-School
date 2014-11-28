@@ -64,25 +64,16 @@ void ParticleEmitter::SpawnParticle()
 
 void ParticleEmitter::update()
 {
-	// get current time
-	float current_time = globalTimer::getTimerInSec();
-
 	// spawn particles
-	float time_elapsed = current_time - last_spawn;
+	while (last_active_particle < NUM_PARTICLES - 1)
+		this->SpawnParticle();
 	
 	// update
-	while( SPAWN_FREQUENCY < time_elapsed )
-	{
-		// spawn a particle
-		this->SpawnParticle();
-		// adjust time
-		time_elapsed -= SPAWN_FREQUENCY;
-		// last time
-		last_spawn = current_time;
-	}
 	
 	// total elapsed
-	time_elapsed = current_time - last_loop;
+	float current_time = globalTimer::getTimerInSec();
+	float time_elapsed = current_time - last_loop;
+	last_loop = current_time;
 
 	Particle *p = this->headParticle;
 	// walk the particles
@@ -115,9 +106,6 @@ void ParticleEmitter::update()
 			p = p->next;
 		}
 	}
-
-	//move a copy to vector for faster iterations in draw
-	last_loop = current_time;
 }
 	   
 void ParticleEmitter::addParticleToList(Particle *p )

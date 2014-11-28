@@ -134,3 +134,12 @@ operations.
 Speed Benchmark:
 Average update time: 2.4 ms
 Average draw time: 14.1 ms
+
+
+************************************************************
+Changelist (current)
+- Removed the weird spawning mechanic.
+
+Speed Benchmark:
+Average update time: 2.3 ms
+Average draw time: 14.0 ms
