@@ -2,7 +2,6 @@
 #define MATRIX_H
 
 // includes
-#include "Enum.h"
 #include <xmmintrin.h>
 #include <cstdio>
 
@@ -25,69 +24,29 @@ public:
 
 	Matrix();	
 	Matrix(const Matrix& t);
+	Matrix(const Vect4D& scale);
 	Matrix(const Vect4D& row1, const Vect4D& row2, const Vect4D& row3, const Vect4D& row4);
 	~Matrix();
 
-	Vect4D getRow(const MatrixRowEnum& row) const;
-
-	void setTransMatrix(const Vect4D& t);
-	void setScaleMatrix(const Vect4D& s);
-	void setRotZMatrix(const float Z_Radians);
-
-	float& operator[](const INDEX_ENUM& e);
+	void translate(const Vect4D& t);
+	void rotate(const float z_radians);
 	
 	Matrix& operator*=(const Matrix& t);
-	Matrix& operator-=(const Matrix& t);
-
-	float Determinant() const;
-	
-	Matrix GetAdjugate() const;
-	Matrix& Matrix::operator/=(const float t);
-	
-	void Matrix::Inverse(Matrix &out) const;
 	
 private:
 
+// Disable the warning for anonymous union/struct - these are supposed to be that way
 #pragma warning(push)
 #pragma warning(disable : 4201)
 	union {
-		__m128 row0;
 		struct {
-			float m0;
-			float m1;
-			float m2;
-			float m3;
+			__m128 row0;
+			__m128 row1;
+			__m128 row2;
+			__m128 row3;
 		};
-	};
 
-	union {
-		__m128 row1;
-		struct {
-			float m4;
-			float m5;
-			float m6;
-			float m7;
-		};
-	};
-
-	union {
-		__m128 row2;
-		struct {
-			float m8;
-			float m9;
-			float m10;
-			float m11;
-		};
-	};
-
-	union {
-		__m128 row3;
-		struct {
-			float m12;
-			float m13;
-			float m14;
-			float m15;
-		};
+		float m[16];
 	};
 #pragma warning(pop)
 };

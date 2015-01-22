@@ -5,7 +5,6 @@
 #define Vect4D_H
 
 // includes
-#include "Enum.h"
 #include <xmmintrin.h>
 
 // Foward Declarations
@@ -22,7 +21,7 @@ public:
 	Vect4D(const __m128& m);
 	~Vect4D();
 
-	Vect4D& norm();
+	void norm();
 	
 	Vect4D& operator += (const Vect4D& t);
 	Vect4D& operator += (const __m128& t);
@@ -30,9 +29,7 @@ public:
 	Vect4D& operator *= (const float scale);
 	Vect4D& operator *= (const __m128& t);
 
-	Vect4D Cross(const Vect4D &vin) const;
-
-	float &operator[](const VECT_ENUM& e);
+	void Cross(const Vect4D &vin);
 
 private:
 #pragma warning(push)

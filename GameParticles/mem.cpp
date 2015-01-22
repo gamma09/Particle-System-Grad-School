@@ -9,10 +9,40 @@
 
 #define ALIGNMENT_PAD (16)
 
-freeHdr* divide_with_new_free_header(freeHdr* dest, memU32 blockSize, freeHdr* next, memBool isLastNode);
-freeHdr* find_next_free_node(usedHdr* current);
-memU32 max(const memU32 a, const memU32 b);
-freeHdr* merge_blocks(freeHdr* destination, freeHdr* headerToRemove);
+// -------------------------------------------------------
+// Internal function declarations
+// -------------------------------------------------------
+freeHdr* merge_blocks(freeHdr* const destination, const freeHdr* const headerToRemove);
+freeHdr* divide_with_new_free_header(freeHdr* const dest, uint32_t blockSize, freeHdr* const next, bool isLastNode);
+freeHdr* find_next_free_node(const usedHdr* const current);
+uint32_t max(const uint32_t a, const uint32_t b);
+
+
+
+// -------------------------------------------------------
+// Global functions
+// -------------------------------------------------------
+void* operator new(const size_t size)
+{
+	return memSystem::Instance().Malloc(size);
+}
+
+void operator delete(void* const p)
+{
+	memSystem::Instance().Free(p);
+}
+
+
+
+// -------------------------------------------------------
+// Public methods
+// -------------------------------------------------------
+const memSystem& memSystem::Instance()
+{
+	static memSystem mem;
+
+	return mem;
+}
 
 memSystem::~memSystem()
 {
@@ -20,7 +50,7 @@ memSystem::~memSystem()
 }
 
 
-heapHdr *memSystem::getHeap()
+heapHdr *memSystem::getHeap() const
 {
 	return heap;
 }
@@ -31,14 +61,14 @@ memSystem::memSystem()
 	this->rawMem = new char[HEAP_SIZE+ALIGNMENT_PAD];
 
 	// Correct pointer to make sure it's 16 byte aligned
-	char *p_corrected = (char *) ( ((memU32)rawMem + (16-1) ) & ~(16-1) );   
+	char *p_corrected = (char *) ( ((uint32_t)rawMem + (16-1) ) & ~(16-1) );   
 
 	// instantiate the heap header on the raw memory
 	heap = new(p_corrected) heapHdr(p_corrected);
 
 }
 
-memVoid memSystem::InitializeSystem( )
+void memSystem::InitializeSystem() const
 {
 	freeHdr* firstHeader = (freeHdr*) (this->heap + 1);
 	firstHeader->freeNext = 0;
@@ -67,8 +97,13 @@ memVoid memSystem::InitializeSystem( )
 	heap->stats.sizeHeapHeader = sizeof(heapHdr);
 }
 
-memVoid memSystem::Free( memVoid * const data )
+void memSystem::Free(void * const data) const
 {
+	if ((uint32_t) data <= (uint32_t) this->rawMem || (uint32_t) data >= (uint32_t) this->rawMem + HEAP_SIZE) {
+		free(data);
+		return;
+	}
+
 	usedHdr* header = ((usedHdr*) data) - 1;
 
 	this->heap->stats.currNumUsedBlocks--;
@@ -86,11 +121,11 @@ memVoid memSystem::Free( memVoid * const data )
 	if (this->heap->freeHead == 0) {
 		preF = 0;
 		postF = 0;
-	}else if ((memUInt) this->heap->freeHead > (memUInt) header) {
+	}else if ((uint32_t) this->heap->freeHead > (uint32_t) header) {
 		preF = 0;
 		postF = this->heap->freeHead;
 	}else{
-		if ((memUInt) this->heap->freeTail < (memUInt) header) {
+		if ((uint32_t) this->heap->freeTail < (uint32_t) header) {
 			preF = this->heap->freeTail;
 			postF = 0;
 		}else{
@@ -156,9 +191,9 @@ memVoid memSystem::Free( memVoid * const data )
 	}
 }
 
-memVoid* memSystem::Malloc( const memU32 size )
+void* memSystem::Malloc(const uint32_t size) const
 {
-	memVoid* ptr;
+	void* ptr;
 
 	if (size == 0) {
 		ptr = 0;
@@ -166,8 +201,8 @@ memVoid* memSystem::Malloc( const memU32 size )
 	}else{
 	
 		// Allocate memory so that the addresses are 4-byte aligned
-		memU32 aligned = 4 * (memU32) ceilf(size / 4.0f);
-		memU32 memSize = max(sizeof(freeHdr*), aligned);
+		uint32_t aligned = 4 * (uint32_t) ceilf(size / 4.0f);
+		uint32_t memSize = max(sizeof(freeHdr*), aligned);
 	
 		// Find first free node that is large enough for the allocation
 		freeHdr* freeHeader = this->heap->freeHead;
@@ -189,7 +224,7 @@ memVoid* memSystem::Malloc( const memU32 size )
 				this->heap->stats.currNumFreeBlocks--;
 			}else{
 				freeHdr* address = (freeHdr*) ((unsigned char *) (freeHeader + 1) + memSize);
-				memU32 blockSize = freeHeader->blockSize - memSize - sizeof(freeHdr);
+				uint32_t blockSize = freeHeader->blockSize - memSize - sizeof(freeHdr);
 				postF = divide_with_new_free_header(address, blockSize, freeHeader->freeNext, freeHeader->isLastNode);
 				freeHeader->isLastNode = false;
 				if (this->heap->freeHead == freeHeader)
@@ -245,10 +280,14 @@ memVoid* memSystem::Malloc( const memU32 size )
 	return ptr;
 }
 
-#define EMPTY_FIELD "        "
 
-// ---------------- Internal functions --------------------
-inline freeHdr* divide_with_new_free_header(freeHdr* dest, memU32 blockSize, freeHdr* next, memBool isLastNode) {
+
+
+// -------------------------------------------------------
+// Internal function definitions
+// -------------------------------------------------------
+
+inline freeHdr* divide_with_new_free_header(freeHdr* const dest, uint32_t blockSize, freeHdr* const next, bool isLastNode) {
 	dest->freeNext = next;
 	dest->blockSize = blockSize;
 	dest->blockType = FREE_HEADER_TYPE;
@@ -264,7 +303,7 @@ inline freeHdr* divide_with_new_free_header(freeHdr* dest, memU32 blockSize, fre
 	return dest;
 }
 
-freeHdr* find_next_free_node(usedHdr* current) {
+freeHdr* find_next_free_node(const usedHdr* const current) {
 	if (current == 0)
 		return 0;
 
@@ -272,14 +311,14 @@ freeHdr* find_next_free_node(usedHdr* current) {
 		return (freeHdr*) current;
 
 	else
-		return find_next_free_node((usedHdr*) ((memUInt) current + sizeof(usedHdr) + current->blockSize));
+		return find_next_free_node((usedHdr*) ((uint32_t) current + sizeof(usedHdr) + current->blockSize));
 }
 
-inline memU32 max(const memU32 a, const memU32 b) {
+inline uint32_t max(const uint32_t a, const uint32_t b) {
 	return (a > b) ? a : b;
 }
 
-inline freeHdr* merge_blocks(freeHdr* destination, freeHdr* headerToRemove) {
+inline freeHdr* merge_blocks(freeHdr* const destination, const freeHdr* const headerToRemove) {
 	destination->blockSize += sizeof(freeHdr) + headerToRemove->blockSize;
 	destination->freeNext = headerToRemove->freeNext;
 	if (destination->freeNext != 0)
@@ -287,7 +326,7 @@ inline freeHdr* merge_blocks(freeHdr* destination, freeHdr* headerToRemove) {
 
 	destination->isLastNode = headerToRemove->isLastNode;
 
-	freeHdr** endPtr = (freeHdr**) ((memUInt) (destination + 1) + destination->blockSize - sizeof(freeHdr*));
+	freeHdr** endPtr = (freeHdr**) ((uint32_t) (destination + 1) + destination->blockSize - sizeof(freeHdr*));
 	*endPtr = destination;
 	
 	return destination;

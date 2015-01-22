@@ -41,7 +41,9 @@ void Particle::Update(const float& time_elapsed, const float& life) {
 	vel *= time_elapsed;
 	position += vel;
 
-	Vect4D v = position.Cross(Z_AXIS).norm();
+	Vect4D v = position;
+	v.Cross(Z_AXIS);
+	v.norm();
 	v *= 0.05f * life;
 	position += v;
 }

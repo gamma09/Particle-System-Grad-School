@@ -25,7 +25,7 @@ heapHdr::heapHdr(void * ptr)
 	stats.sizeHeap = 0;				// size of Heap total space, including header
 	stats.sizeHeapHeader =0;		// size of heap header
 
-	stats.heapTopAddr = reinterpret_cast<memVoid *> ( (memU8 *)ptr + sizeof(heapHdr) );		// start address available heap
-	stats.heapBottomAddr = reinterpret_cast<memVoid *> ( (memU8 *)ptr + HEAP_SIZE );		// last address available heap
+	stats.heapTopAddr = reinterpret_cast<void *> ( (uint8_t *)ptr + sizeof(heapHdr) );		// start address available heap
+	stats.heapBottomAddr = reinterpret_cast<void *> ( (uint8_t *)ptr + HEAP_SIZE );		// last address available heap
 	
 }

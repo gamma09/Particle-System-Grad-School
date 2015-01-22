@@ -7,7 +7,8 @@
 #include "ParticleEmitter.h"
 #include "mem.h"
 
-static const float SPAWN_FREQUENCY = 0.0000001f; // 
+// We know beforehand that the camera is not moving, so we can do this to save us time
+static const Vect4D CAMERA_MATRIX_ROW_3(0.0f, -3.0f, -10.0f, 1.0f);
 
 static const unsigned char squareColors[] = 
 {
@@ -25,8 +26,6 @@ static const float squareVertices[] =
 	 0.015f,   0.015f, 0.0f,
 };
 
-static const __m128 PIVOT_VECTOR = _mm_setr_ps(20.0f, 0.0f, 1000.0f, 1.0f);
-
 ParticleEmitter::ParticleEmitter()
 	: last_loop(  globalTimer::getTimerInSec() )
 {
@@ -35,7 +34,6 @@ ParticleEmitter::ParticleEmitter()
 
 ParticleEmitter::~ParticleEmitter()
 {
-	// do nothing
 }
 
 void ParticleEmitter::SpawnParticles() {
@@ -73,52 +71,25 @@ void ParticleEmitter::reset() {
 
 void ParticleEmitter::draw()
 {
-	// get the camera matrix from OpenGL
-	// need to get the position
-	Matrix cameraMatrix;
-
-	// get the camera matrix from OpenGL
-	glGetFloatv(GL_MODELVIEW_MATRIX, reinterpret_cast<float*>(&cameraMatrix));
 
 	// iterate throught the list of particles
 	for (int i = 0; i < NUM_PARTICLES; i++) {
-		// get the position from this matrix
-		Vect4D camPosVect = cameraMatrix.getRow(Matrix::MATRIX_ROW_3);
 
-		// OpenGL goo... don't worrry about this
+		// OpenGL goo... don't worry about this
 		glVertexPointer(3, GL_FLOAT, 0, squareVertices);
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glColorPointer(4, GL_UNSIGNED_BYTE, 0, squareColors);
 		glEnableClientState(GL_COLOR_ARRAY);
 
-		// camera position
-		Matrix transCamera;
-		transCamera.setTransMatrix(camPosVect);
-
-		// particle position
-		Matrix transParticle;
-		transParticle.setTransMatrix(particles[i]->position);
-		// rotation matrix
-		Matrix rotParticle;
-		rotParticle.setRotZMatrix(particles[i]->rotation);
-
-		// pivot Point
-		Matrix pivotParticle;
-		Vect4D pivotVect(PIVOT_VECTOR);
-		pivotVect *= life;
-		pivotParticle.setTransMatrix(pivotVect);
-
 		// scale Matrix
-		Matrix scaleMatrix;
-		scaleMatrix.setScaleMatrix(particles[i]->scale);
+		Matrix transformMatrix(particles[i]->scale);
 
-		// total transformation of particle
-		scaleMatrix *= transCamera;
-		scaleMatrix *= transParticle;
-		scaleMatrix *= rotParticle;
+		transformMatrix.translate(CAMERA_MATRIX_ROW_3);
+		transformMatrix.translate(particles[i]->position);
+		transformMatrix.rotate(particles[i]->rotation);
 
 		// set the transformation matrix
-		glLoadMatrixf(reinterpret_cast<float*>(&scaleMatrix));
+		glLoadMatrixf(reinterpret_cast<float*>(&transformMatrix));
 
 		// draw the trangle strip
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

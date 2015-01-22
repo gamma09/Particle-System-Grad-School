@@ -72,9 +72,6 @@
     <ClInclude Include="DO_NOT_MODIFY\Timer\Timer.h">
       <Filter>Do Not Modify</Filter>
     </ClInclude>
-    <ClInclude Include="Math\Enum.h">
-      <Filter>Math</Filter>
-    </ClInclude>
     <ClInclude Include="Math\Matrix.h">
       <Filter>Math</Filter>
     </ClInclude>
@@ -88,9 +85,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="mem.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="memTypes.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="usedHdr.h">

@@ -7,21 +7,11 @@
 #include "mem.h"
 #include "Settings.h"
 
-extern memSystem mem;
-
 class ParticleEmitter
 {
 public:
 	ParticleEmitter();
 	~ParticleEmitter();
-
-	void* operator new(size_t size) {
-		return mem.Malloc(size);
-	}
-
-	void operator delete(void* memory) {
-		mem.Free(memory);
-	}
 	
 	void SpawnParticles();
 	void update();

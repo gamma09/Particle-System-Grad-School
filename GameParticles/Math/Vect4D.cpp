@@ -23,11 +23,10 @@ Vect4D::~Vect4D() {
 	// nothing to delete
 }
 
-Vect4D& Vect4D::norm() {
+void Vect4D::norm() {
 	m = _mm_mul_ps(m, _mm_rsqrt_ps(_mm_dp_ps(m, m, 0x77)));
-
-	return *this;
 }
+
 
 Vect4D& Vect4D::operator+= (const Vect4D& t) {
 	m = _mm_add_ps(m, t.m);
@@ -60,31 +59,14 @@ Vect4D& Vect4D::operator *= (const __m128& t) {
 	return *this;
 }
 
-float& Vect4D::operator[](const VECT_ENUM& e) {
-	switch(e)
-	{
-	case 0:
-			return x;
-	case 1:
-			return y;
-	case 2: 
-			return z;
-	case 3:
-			return w;
-	default:
-			assert(0);
-			return x;
-	}
-}
-
-Vect4D Vect4D::Cross(const Vect4D& vin) const
+void Vect4D::Cross(const Vect4D& vin)
 {
 	__m128 a = _mm_setr_ps(y, z, x, 1.0f);
 	__m128 b = _mm_setr_ps(vin.z, vin.x, vin.y, 1.0f);
 	__m128 c = _mm_setr_ps(z, x, y, 0.0f);
 	__m128 d = _mm_setr_ps(vin.y, vin.z, vin.x, 0.0f);
 
-	return Vect4D(_mm_sub_ps(_mm_mul_ps(a, b), _mm_mul_ps(c, d)));
+	m = _mm_sub_ps(_mm_mul_ps(a, b), _mm_mul_ps(c, d));
 }
 
 // End of file

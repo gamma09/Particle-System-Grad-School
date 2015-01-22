@@ -105,11 +105,9 @@
     <ClInclude Include="DO_NOT_MODIFY\Timer\Timer.h" />
     <ClInclude Include="freeHdr.h" />
     <ClInclude Include="heapHdr.h" />
-    <ClInclude Include="Math\Enum.h" />
     <ClInclude Include="Math\Matrix.h" />
     <ClInclude Include="Math\Vect4D.h" />
     <ClInclude Include="mem.h" />
-    <ClInclude Include="memTypes.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ParticleEmitter.h" />
     <ClInclude Include="Settings.h" />

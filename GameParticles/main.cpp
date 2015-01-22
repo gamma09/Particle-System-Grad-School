@@ -10,8 +10,6 @@
 #include <cstdio>
 #include "mem.h"
 
-memSystem mem;
-
 // WIN32 - prototype
 int main (int argc, char * const argv[]);
 
@@ -32,7 +30,7 @@ int main (int argc, char * const argv[]) {
 	bool success = false;
 	srand(1);
 
-	mem.InitializeSystem();
+	memSystem::Instance().InitializeSystem();
 
 	// initialize timers:------------------------------
 	// Initialize timer
@@ -53,24 +51,22 @@ int main (int argc, char * const argv[]) {
 	ParticleEmitter emitter;
 
 	// Get the inverse Camera Matrix:-------------------
+	// This was calculated offline - the camera does not move
 
-	// initialize the camera matrix
-	Matrix cameraMatrix;
-
-	// setup the translation matrix
-	Matrix transMatrix;
-	Vect4D trans(0.0f,3.0f,10.0f);
-	transMatrix.setTransMatrix(trans);
-
-	// multiply them together
-	Matrix tmp = cameraMatrix;
-	tmp *= transMatrix;
-
-	Matrix inverseCameraMatrix;
-	tmp.Inverse(inverseCameraMatrix);
+	// initialize the inverse camera matrix:
+	// [ 1  0  0   0 ]
+	// [ 0  1  0  -3 ]
+	// [ 0  0  1 -10 ]
+	// [ 0  0  0   1 ]
+	Matrix inverseCameraMatrix(
+		Vect4D(1.0f, 0.0f, 0.0f, 0.0f),
+		Vect4D(0.0f, 1.0f, 0.0f, 0.0f),
+		Vect4D(0.0f, 0.0f, 1.0f, 0.0f),
+		Vect4D(0.0f, 3.0f, 10.0f, 1.0f));
 
 	// counter for printing
 	int i = 0;
+	
 
 	// main update loop... do this forever or until some breaks 
 	while(OpenGLDevice::IsRunning()) {
@@ -83,27 +79,28 @@ int main (int argc, char * const argv[]) {
 		// stop update timer: -----------------------------------------
 		updateTimer.toc();
 
-		// start draw timer: ----------------------------------------
-		drawTimer.tic();
+		// start draw... end draw (the draw updates)
+		OpenGLDevice::StartDraw();
 		{
-			// start draw... end draw (the draw updates)
-			OpenGLDevice::StartDraw();
-		
 			// set matrix to Model View
 			// push the inverseCameraMarix to stack
 			glMatrixMode(GL_MODELVIEW);
 			glLoadMatrixf(reinterpret_cast<float*>(&inverseCameraMatrix));
-			glPushMatrix(); // push the camera matrix
+			glPushMatrix();
 
-			// draw particles
-			emitter.draw();
-		
+			// start draw timer: ----------------------------------------
+			drawTimer.tic();
+			{
+				// draw particles
+				emitter.draw();
+			}
+			// stop draw timer: -----------------------------------------
+			drawTimer.toc();
+
 			// pop matrix - needs to correspond to previous push
 			glPopMatrix();
-		}
-		// stop draw timer: -----------------------------------------
-		drawTimer.toc();
 
+		}
 		// finish draw update
 		OpenGLDevice::EndDraw();
 

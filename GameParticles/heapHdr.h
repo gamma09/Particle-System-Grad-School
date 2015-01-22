@@ -1,7 +1,7 @@
 #ifndef HEAPHDR_H
 #define HEAPHDR_H
 
-#include"memTypes.h"
+#include <cstdint>
 
 // forward declares
 struct usedHdr;
@@ -9,20 +9,20 @@ struct freeHdr;
 
 struct memStats
 {
-	memUInt peakNumUsed;		// number of peak used allocations
-	memUInt peakUsedMemory;		// peak size of used memory
+	uint32_t peakNumUsed;		// number of peak used allocations
+	uint32_t peakUsedMemory;		// peak size of used memory
 
-	memUInt currNumUsedBlocks;	// number of current used allocations
-	memUInt currUsedMem;		// current size of the total used memory
+	uint32_t currNumUsedBlocks;	// number of current used allocations
+	uint32_t currUsedMem;		// current size of the total used memory
 
-	memUInt	currNumFreeBlocks;	// number of current free blocks
-	memUInt currFreeMem;		// current size of the total free memory
+	uint32_t	currNumFreeBlocks;	// number of current free blocks
+	uint32_t currFreeMem;		// current size of the total free memory
 
-	memUInt sizeHeap;			// size of Heap total space, including header
-	memUInt sizeHeapHeader;		// size of heap header
+	uint32_t sizeHeap;			// size of Heap total space, including header
+	uint32_t sizeHeapHeader;		// size of heap header
 
-	memVoid *heapTopAddr;		// start address available heap
-	memVoid *heapBottomAddr;    // bottom of address of heap
+	void *heapTopAddr;		// start address available heap
+	void *heapBottomAddr;    // bottom of address of heap
 };
 
 
@@ -34,14 +34,14 @@ struct heapHdr
 	usedHdr		*usedHead;
 	freeHdr		*freeHead;
 
-	memBool		heapInitialize;
-	memU8		bytePad1;
-	memU8		bytePad2;
-	memU8		bytePad3;
+	bool		heapInitialize;
+	uint8_t		bytePad1;
+	uint8_t		bytePad2;
+	uint8_t		bytePad3;
 
 	freeHdr*	freeTail;
-	memU32		pad2;
-	memU32		pad3;
+	uint32_t		pad2;
+	uint32_t		pad3;
 
 	// recording stats
 	memStats	stats;		
