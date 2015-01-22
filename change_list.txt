@@ -159,3 +159,17 @@ Changelist (revision bd0e28b - 11/28/2014)
 Speed Benchmark:
 Average update time: 1.4 ms
 Average draw time: 13.3 ms
+
+
+************************************************************
+Changelist (revision 217a596 - 1/22/2014)
+- Removed unused methods in Matrix class
+- Changed Matrix to have a scaling matrix constructor
+- Added Matrix multiplication shortcuts for translation and rotation
+- Const-ified memory system
+- Removed element accessors for both Vert4D and Matrix
+- Moved OpenGL frame initialization outside of the draw timer block
+
+Speed Benchmark:
+Average update time: 1.3 ms
+Average draw time: 10.0 ms
